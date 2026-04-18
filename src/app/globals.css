@@ -1,0 +1,241 @@
+@import "tailwindcss";
+
+@theme {
+  /* =========================================================================
+   * Aliende Design System — Color Tokens
+   * All colors must come from this list. No ad-hoc hex values in components.
+   * =========================================================================
+   */
+  --color-background:       #F7F4EE;   /* Page canvas — warm parchment */
+  --color-surface:          #FFFDF8;   /* Card / panel surface */
+  --color-surface-elevated: #FFFFFF;   /* Modal, tooltip, elevated surface */
+  --color-text-primary:     #111111;   /* Body text, headings */
+  --color-text-secondary:   #5E5A54;   /* Supporting body, secondary labels */
+  --color-text-muted:       #8A847C;   /* Captions, metadata, placeholders */
+  --color-border-subtle:    #E9E2D8;   /* Default card/section borders */
+  --color-border-strong:    #D8CFC3;   /* Hover borders, dividers */
+  --color-accent:           #C6A97B;   /* Primary interaction color (warm gold) */
+  --color-accent-hover:     #B39161;   /* Darken on hover/focus */
+  --color-accent-deep:      #8B6B43;   /* CTA backgrounds, pressed states */
+  --color-accent-wash:      #F1E6D5;   /* Subtle accent background fills */
+
+  /* =========================================================================
+   * Typography
+   * font-sans  → Inter (body, UI text, labels)
+   * font-heading → Manrope (headings, display, key metrics)
+   * =========================================================================
+   */
+  --font-sans:    var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+
+  /* =========================================================================
+   * Geometry
+   * =========================================================================
+   */
+  --radius-pill: 9999px;
+  --radius-card: 16px;
+
+  /* =========================================================================
+   * Shadows
+   * Keep shadows warm and subtle. Never cool grey or black.
+   * =========================================================================
+   */
+  --shadow-premium:       0 4px 24px -4px rgba(139, 107, 67, 0.08);
+  --shadow-premium-hover: 0 8px 32px -4px rgba(139, 107, 67, 0.14);
+}
+
+/* =============================================================================
+ * Base Resets & Global Styles
+ * =============================================================================
+ */
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Consistent scrollbar — prevents layout shift on Windows */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Global focus-visible ring — always accent-colored, never the browser default */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Skip-to-content link for keyboard & screen reader users */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background: var(--color-text-primary);
+  color: var(--color-surface-elevated);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0 0 8px 8px;
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* =============================================================================
+ * Aliende Premium Utility Classes
+ * 
+ * DESIGN GUARDRAILS:
+ *   - Use these classes exclusively. Never inline ad-hoc Tailwind for layout.
+ *   - The 8px rhythm is enforced through Tailwind's spacing scale (gap-6 = 24px,
+ *     py-24 = 96px, etc.) — do not break it with arbitrary values.
+ *   - section-padding defines vertical rhythm. Do not override except via
+ *     section-padding-sm on compact sections.
+ * =============================================================================
+ */
+@layer components {
+
+  /* ---------------------------------------------------------------------------
+   * Layout
+   * ---------------------------------------------------------------------------
+   * container-premium: 1280px max-width with responsive horizontal padding.
+   * article-width:     760px reading column. Use inside container-premium.
+   * section-padding:   Standard vertical section rhythm (96px → 128px).
+   * section-padding-sm: Compact variant for dense content sections.
+   */
+  .container-premium {
+    @apply mx-auto w-full max-w-[1280px] px-5 sm:px-8 lg:px-12;
+  }
+  .article-width {
+    @apply mx-auto w-full max-w-[760px];
+  }
+  .section-padding {
+    @apply py-20 md:py-28 lg:py-32;
+  }
+  .section-padding-sm {
+    @apply py-12 md:py-16;
+  }
+
+  /* ---------------------------------------------------------------------------
+   * Typography
+   * ---------------------------------------------------------------------------
+   * Use heading-1 only once per page (on the h1). Use heading-2 for sections.
+   * Do not change font sizes inline — add a new scale token here instead.
+   * body-large: Introductory/lead copy. body-base: Body paragraphs.
+   */
+  .heading-1 {
+    @apply font-heading text-[2.5rem] leading-[1.1] md:text-[4rem] lg:text-[5rem] font-light tracking-tight text-text-primary;
+  }
+  .heading-2 {
+    @apply font-heading text-3xl leading-tight md:text-4xl lg:text-5xl font-light tracking-tight text-text-primary;
+  }
+  .heading-3 {
+    @apply font-heading text-xl leading-snug md:text-2xl font-semibold tracking-tight text-text-primary;
+  }
+  .body-large {
+    @apply font-sans text-lg md:text-xl font-light text-text-secondary leading-[1.75];
+  }
+  .body-base {
+    @apply font-sans text-base font-normal text-text-secondary leading-[1.75];
+  }
+  .label-overline {
+    @apply font-sans text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-text-muted;
+  }
+
+  /* ---------------------------------------------------------------------------
+   * Buttons
+   * ---------------------------------------------------------------------------
+   * All interactive elements must show focus-visible ring on keyboard nav.
+   * Hover: subtle lift (-0.5 translate-y) + slight color shift.
+   * Active: snap back (scale-95 or translate-y-0).
+   * Transition: 200ms is the sweet spot — fast enough to feel snappy.
+   * 
+   * EXTENSION:
+   *   - To add a danger button, copy btn-primary and change bg to a warm red.
+   *   - Never use transition-all on buttons — it causes font rendering glitches.
+   */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-pill bg-text-primary px-7 py-3 text-sm font-medium text-white
+           transition-[background-color,transform,box-shadow] duration-200
+           hover:bg-text-secondary hover:-translate-y-px
+           active:translate-y-0 active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background
+           disabled:pointer-events-none disabled:opacity-40;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-pill border border-border-strong bg-surface px-7 py-3 text-sm font-medium text-text-primary shadow-premium
+           transition-[background-color,border-color,transform,box-shadow] duration-200
+           hover:border-text-muted hover:bg-surface-elevated hover:-translate-y-px hover:shadow-premium-hover
+           active:translate-y-0 active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background
+           disabled:pointer-events-none disabled:opacity-40;
+  }
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2 rounded-pill bg-accent px-7 py-3 text-sm font-medium text-white shadow-premium
+           transition-[background-color,transform,box-shadow] duration-200
+           hover:bg-accent-hover hover:-translate-y-px hover:shadow-premium-hover
+           active:translate-y-0 active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background
+           disabled:pointer-events-none disabled:opacity-40;
+  }
+
+  /* ---------------------------------------------------------------------------
+   * Cards
+   * ---------------------------------------------------------------------------
+   * card-premium: Base surface for interactive and informational cards.
+   * Hover is always a subtle up-lift + warm shadow deepening.
+   * Never use drop shadows on hover that expand outward aggressively.
+   */
+  .card-premium {
+    @apply rounded-card border border-border-subtle bg-surface-elevated p-8 shadow-premium
+           transition-[transform,box-shadow,border-color] duration-300
+           hover:-translate-y-1 hover:shadow-premium-hover;
+  }
+
+  /* ---------------------------------------------------------------------------
+   * Motion Utilities (CSS-only fallback for no-JS contexts)
+   * See: @media (prefers-reduced-motion) block below.
+   */
+  .animate-fade-up {
+    opacity: 0;
+    animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-delay-100 { animation-delay: 100ms; }
+  .animate-delay-200 { animation-delay: 200ms; }
+  .animate-delay-300 { animation-delay: 300ms; }
+}
+
+/* =============================================================================
+ * Keyframes
+ * =============================================================================
+ */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* =============================================================================
+ * Reduced Motion
+ *
+ * IMPORTANT: This block overrides ALL animations and transitions globally.
+ * Framer Motion respects the useReducedMotion hook — ensure that SectionReveal
+ * and other animated components also check for this preference at the JS level.
+ * =============================================================================
+ */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-fade-up {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
